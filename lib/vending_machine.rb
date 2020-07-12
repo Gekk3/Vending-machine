@@ -4,8 +4,6 @@ class VendingMachine
 	include CoinBank
 	attr_accessor  :items, :item, :balance, :operative_coins, :bank_coins
 	def initialize()
-
-	  #@items = items
 		@items = { 
 			'001' => { name: 'Cocoa Cola', price: 5.99, units: 3 },
 			'002' => { name: 'Banana Energy Bar', price: 19.99, units: 3 },
@@ -21,14 +19,12 @@ class VendingMachine
 
 	def select_item( code = nil )
 		@item = code ? items[code.to_s.rjust(3, '0')] : item # [code.to_sym]
-		if item
-			if in_stock? item
-				if @operative_sum > 0
-					release_item if correct_sum_paid?
-				else # only code added
-					puts item[:name]
-					"Price: #{item[:price]}"
-				end
+		if item && in_stock?
+			if @operative_sum > 0
+				release_item if correct_sum_paid?
+			else # only code added
+				puts item[:name]
+				"Price: #{item[:price]}"
 			end
 		else
 			'Please add a valid item code'
@@ -38,7 +34,7 @@ class VendingMachine
 	def insert_coin( paid )
 		coin = paid.to_f
 		if legal_coin? coin
-			@operative_coins[paid.to_s] += 1
+			operative_coins[paid.to_s] += 1
 			@operative_sum += coin
 			if item
 				select_item
@@ -80,11 +76,11 @@ class VendingMachine
 			end
 		end
 
-		def in_stock? item
+		def in_stock?
 			if item[:units] > 0
 				true
 			else
-				return_coins_with_sound @operative_coins
+				return_coins_with_sound operative_coins
 				puts "#{item[:name]} is out of stock"
 				reset_operative_status
 				raise "Would you like to buy another item?"
@@ -108,8 +104,8 @@ class VendingMachine
 			if remaining_change < 0.25 # not enough change to return
 				true
 			else
-				return_coins_with_sound @operative_coins
-				return_coins_from_bank @operative_coins
+				return_coins_with_sound operative_coins
+				return_coins_from_bank operative_coins
 				reset_operative_status
 				raise "Our apologies, the machine is out of charge"
 			end
