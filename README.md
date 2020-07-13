@@ -7,8 +7,12 @@ Keep in mind that you need to manage the scenario where the item is out of stock
 
 
 irb
+
 require "./lib/vending_machine.rb"
+
 v = VendingMachine.new()
 
+
 v.select_item(1)
+
 v.insert_coin(5)
